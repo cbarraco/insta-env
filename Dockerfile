@@ -2,7 +2,9 @@ FROM ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
 
 # enable all apt repos
-RUN sed -i -- 's/# deb/deb/g' /etc/apt/sources.list && apt-get update
+RUN sed -i -- 's/# deb/deb/g' /etc/apt/sources.list && \
+    sed -i -- 's/http:\/\/archive.ubuntu.com\/ubuntu/http:\/\/ubuntu.mirror.rafal.ca\/ubuntu/g' /etc/apt/sources.list && \
+    apt-get update
 
 # do basic config
 RUN apt-get install -y sudo apt-utils locales && \
@@ -25,8 +27,8 @@ RUN apt-get install -y git neovim bash-completion wget curl htop stow
 
 USER user
 
-# install lf
-RUN go get -u github.com/gokcehan/lf
+# install go programs
+RUN go get -u github.com/gokcehan/lf github.com/shenwei356/rush/
 
 # get dotfiles
 WORKDIR /home/user
