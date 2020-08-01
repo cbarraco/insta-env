@@ -18,7 +18,7 @@ ENV GOPATH=/home/user/.gocode
 ENV PATH=$PATH:$GOPATH/bin
 
 # install package managers
-RUN apt-get install -y snapd golang nodejs
+RUN apt-get install -y golang
 
 # install basic apps
 RUN apt-get install -y git neovim bash-completion wget curl htop stow
