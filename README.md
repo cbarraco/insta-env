@@ -1,2 +1,2 @@
 # insta-env
-Docker image that has my dotfiles and preferred programs preinstalled
+Ubuntu image that has my dotfiles and preferred programs preinstalled
