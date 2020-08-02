@@ -23,17 +23,17 @@ ENV PATH=$PATH:$GOPATH/bin
 RUN apt-get install -y golang
 
 # install basic apps
-RUN apt-get install -y git neovim bash-completion wget curl htop stow
+RUN apt-get install -y git neovim bash-completion wget curl jq stow
 
 USER user
 
 # install go programs
-RUN go get -u github.com/gokcehan/lf github.com/shenwei356/rush/
+RUN go get -u github.com/gokcehan/lf github.com/shenwei356/rush
 
 # get dotfiles
 WORKDIR /home/user
-RUN git clone https://github.com/cbarraco/dotfiles.git && \
-    chmod +x ./dotfiles/install.sh && (cd dotfiles && ./install.sh)
+RUN git clone https://github.com/cbarraco/dotfiles.git .dotfiles && \
+    chmod +x ./.dotfiles/install.sh && (cd .dotfiles && ./install.sh)
 
 # set up neovim
 RUN sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
