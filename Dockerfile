@@ -16,26 +16,38 @@ RUN apt-get install -y sudo apt-utils locales && \
 RUN useradd user && usermod -a -G sudo user && \
     echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     mkdir /home/user && chown user:user /home/user
-ENV GOPATH=/home/user/.gocode
-ENV PATH=$PATH:$GOPATH/bin
-
-# install package managers
-RUN apt-get install -y golang
 
 # install basic apps
-RUN apt-get install -y git neovim bash-completion wget curl jq stow
-
-USER user
-
-# install go programs
-RUN go get -u github.com/gokcehan/lf github.com/shenwei356/rush
-
-# get dotfiles
-WORKDIR /home/user
-RUN git clone https://github.com/cbarraco/dotfiles.git .dotfiles && \
-    chmod +x ./.dotfiles/install.sh && (cd .dotfiles && ./install.sh)
+RUN apt-get install -y git bash-completion wget curl jq stow
 
 # set up neovim
+RUN apt-get install -y neovim
 RUN sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim' && \
     nvim --headless +PlugInstall +qall -
+
+# install miniconda3
+ENV PATH /opt/conda/bin:$PATH
+RUN apt-get install -y wget bzip2 ca-certificates libglib2.0-0 libxext6 libsm6 libxrender1 git mercurial subversion
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    /opt/conda/bin/conda clean -tipsy && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc && \
+    find /opt/conda/ -follow -type f -name '*.a' -delete && \
+    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
+    /opt/conda/bin/conda clean -afy
+
+# install go programs
+ENV GOPATH=/home/user/.gocode
+ENV PATH=$PATH:$GOPATH/bin
+RUN apt-get install -y golang
+RUN go get -u github.com/gokcehan/lf github.com/shenwei356/rush
+
+# get dotfiles
+USER user
+WORKDIR /home/user
+RUN git clone https://github.com/cbarraco/dotfiles.git .dotfiles && \
+    chmod +x ./.dotfiles/install.sh && (cd .dotfiles && ./install.sh)
